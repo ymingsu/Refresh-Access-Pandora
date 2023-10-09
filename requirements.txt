@@ -1,4 +1,4 @@
-certifi==2022.5.18.1
-Flask==2.2.5
-Pandora_ChatGPT==1.3.2
-Requests==2.31.0
+certifi
+Flask
+Pandora_ChatGPT
+Requests
