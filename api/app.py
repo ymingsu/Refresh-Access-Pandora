@@ -7,7 +7,6 @@ from certifi import where
 from datetime import datetime as dt
 import datetime
 from pandora.openai.auth import Auth0
-import waitress
 from os import getenv
 
 app = Flask(__name__)
@@ -180,5 +179,3 @@ def parse_access_token(resp):
     else:
         # raise Exception(resp.text)
         return jsonify({'text': resp.text}), resp.status_code
-if __name__ == '__main__':
-    waitress.serve(app, host='0.0.0.0', port='5000')
