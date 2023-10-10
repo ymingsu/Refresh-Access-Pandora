@@ -92,7 +92,6 @@ def get_access_token(username,password,mfa):
 
 @app.route('/api/revoke', methods=['POST'])
 def revoke_refresh_token():
-    proxy = "socks5://127.0.0.1:2080"
     user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) ' \
                           'Chrome/109.0.0.0 Safari/537.36'
     refresh_data = {
@@ -165,7 +164,6 @@ def parse_access_token(resp):
     if resp.status_code == 200:
         json = resp.json()
         if 'access_token' not in json:
-            # raise Exception('Get access token failed, maybe you need a proxy.')
             error_message = 'Failed to get access token.'
             return jsonify({'text': error_message}), 500
 
