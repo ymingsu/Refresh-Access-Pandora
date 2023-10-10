@@ -20,9 +20,10 @@ def hello():
 
 @app.route('/api/share', methods=['POST'])
 def share_token():
-    unique_name = getenv("UNIQUE_NAME",'my-share')
+    # unique_name = getenv("UNIQUE_NAME",'my-share')
     register_url = 'https://ai.fakeopen.com/token/register'
     expires_in=0
+    unique_name = request.json.get('unique_name', 'my-share')
     access_token_payload = request.get_json()
     access_token = access_token_payload['access_token']
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -92,8 +93,15 @@ def get_access_token(username,password,mfa):
 
 @app.route('/api/revoke', methods=['POST'])
 def revoke_refresh_token():
+    refresh_token = request.json.get('refresh_token', None)
     user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) ' \
                           'Chrome/109.0.0.0 Safari/537.36'
+    if not refresh_token:
+        return jsonify({'text': 'Refresh token not exist.'}), 500
+    # 在这里进行验证 refresh_token 的逻辑
+    if not check_refresh_token(refresh_token):
+        error_message = 'Invalid refresh token.'
+        return jsonify({'text': error_message}), 500
     refresh_data = {
         "client_id": "pdlLIX2Y72MIl2rhLhTE9VV9bN905kBh",
         "refresh_token": refresh_token
