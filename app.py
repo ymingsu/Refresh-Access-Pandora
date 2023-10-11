@@ -46,17 +46,17 @@ def is_pandora_api_key(key):
 def pool_token():
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     pool_url = 'https://ai.fakeopen.com/pool/update'
-    share_tokens = request.json.get('share_tokens', [])
-    if len(share_tokens)<2:
-        return jsonify({'text': 'More share tokens needed.'}),500
+    share_tokens = request.json.get('share_tokens', None)
+    # if len(share_tokens)<2:
+    #     return jsonify({'text': 'More share tokens needed.'}),500
     pool_token = request.json.get('pool_token', None)
-    share_token_list_str = '%0A'.join([share_token for share_token in share_tokens if is_pandora_api_key(share_token)])
-    if len(share_tokens)<2:
-        return jsonify({'text': 'More valid share tokens needed.'}),500
+    # share_token_list_str = '%0A'.join([share_token for share_token in share_tokens if is_pandora_api_key(share_token)])
+    # if len(share_tokens)<2:
+    #     return jsonify({'text': 'More valid share tokens needed.'}),500
     if is_pandora_api_key(pool_token):
-        pool_payload = f'share_tokens={share_token_list_str}&pool_token={pool_token}'
+        pool_payload = f'share_tokens={share_tokens}&pool_token={pool_token}'
     else:
-        pool_payload = f'share_tokens={share_token_list_str}'
+        pool_payload = f'share_tokens={share_tokens}'
     pool_response = requests.request('POST', pool_url, headers=headers, data=pool_payload)
     if pool_response.status_code == 200:
         return jsonify({'pool_token': pool_response.json()['pool_token']}),200
