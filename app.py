@@ -20,7 +20,6 @@ def hello():
 
 @app.route('/api/share', methods=['POST'])
 def share_token():
-    # unique_name = getenv("UNIQUE_NAME",'my-share')
     register_url = 'https://ai.fakeopen.com/token/register'
     expires_in=0
     unique_name = request.json.get('unique_name', 'my-share')
@@ -40,7 +39,9 @@ def share_token():
     else:
         token_info['text'] = share_response.text
         return jsonify(token_info),share_response.status_code
-
+def is_pandora_api_key(key):
+    API_MATCH_pandora = re.match(r"[pf]k-[a-zA-Z0-9-_]{43}$", key)
+    return bool(API_MATCH_pandora)
 @app.route('/api/pool', methods=['POST'])
 def pool_token():
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -49,8 +50,10 @@ def pool_token():
     if len(share_tokens)<2:
         return jsonify({'text': 'More share tokens needed.'}),500
     pool_token = request.json.get('pool_token', None)
-    share_token_list_str = '%0A'.join([share_token for share_token in share_tokens])
-    if not pool_token:
+    share_token_list_str = '%0A'.join([share_token for share_token in share_tokens if is_pandora_api_key(share_token)])
+    if len(share_tokens)<2:
+        return jsonify({'text': 'More valid share tokens needed.'}),500
+    if is_pandora_api_key(pool_token):
         pool_payload = f'share_tokens={share_token_list_str}&pool_token={pool_token}'
     else:
         pool_payload = f'share_tokens={share_token_list_str}'
