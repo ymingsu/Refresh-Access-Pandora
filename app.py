@@ -47,17 +47,12 @@ def pool_token():
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     pool_url = 'https://ai.fakeopen.com/pool/update'
     share_tokens = request.json.get('share_tokens', None)
-    # if len(share_tokens)<2:
-    #     return jsonify({'text': 'More share tokens needed.'}),500
     pool_token = request.json.get('pool_token', None)
-    # share_token_list_str = '%0A'.join([share_token for share_token in share_tokens if is_pandora_api_key(share_token)])
-    # if len(share_tokens)<2:
-    #     return jsonify({'text': 'More valid share tokens needed.'}),500
     if is_pandora_api_key(pool_token):
         pool_payload = f'share_tokens={share_tokens}&pool_token={pool_token}'
     else:
         pool_payload = f'share_tokens={share_tokens}'
-    pool_response = requests.request('POST', pool_url, headers=headers, data=pool_payload)
+    pool_response = requests.post(pool_url, headers=headers, data=pool_payload)
     if pool_response.status_code == 200:
         return jsonify({'pool_token': pool_response.json()['pool_token']}),200
     return jsonify({'text': pool_response.text}),pool_response.status_code
@@ -90,7 +85,6 @@ def get_access_token(username,password,mfa):
             token_info['text'] = str(e1).replace('\n', '').replace('\r', '').strip()
         except Exception as e2:
             token_info['text'] = str(e2).replace('\n', '').replace('\r', '').strip()
-            # error_message = 'Invalid refresh token.'
             return jsonify(token_info), 500
     return jsonify(token_info), 200
 
@@ -186,5 +180,4 @@ def parse_access_token(resp):
         }
         return jsonify(data), 200
     else:
-        # raise Exception(resp.text)
         return jsonify({'text': resp.text}), resp.status_code
